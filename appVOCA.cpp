@@ -1,11 +1,29 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib> // To use rand()
-#include <string>
+#include <cstring>
+#include <cstring>
+#include "Word.h"
 
 using namespace std;
 
-void Word::voca_Init()
+int Word:: getT_voca() {  //const not used here because static data member
+	return voca;
+}
+
+string Word:: get_viet()
+{
+    return VIET;
+}
+
+int Word:: get_type()
+{
+    return TYPE;
+}
+
+int Word::voca = 0; //initializing the static int 
+
+void Word::create_vocabulary()
 {
     system("CLS");
     int count = 0;
@@ -19,12 +37,53 @@ void Word::voca_Init()
     cout << "(1): Danh tu" << setw(5) << "(2): Dong tu" << endl
          << "(3): Tinh tu" << setw(5) << "(4): Trang tu" << endl;
     cin >> TYPE;
-};
+}
 
-void Word::voca_Show()
+int GetRandom(int min,int max){
+    return min + (int)(rand()*(max-min+1.0)/(1.0+RAND_MAX));
+}
+
+void Word::review_vocabulary(string VIET, int TYPE)
 {
-    cout << "Tu vung thu " << ID + 1 << "la: " << ENG << endl;
-    cout << "Nghia tieng viet la: " << VIET << endl;
+    int n;
+    string re_viet;
+    int re_type;
+    cout << "\t\t\t\t  Enter the Number of vocabulary you want to Review:  ";
+    cin >> n;
+    cout << "Tu vung ID la " << GetRandom(1,n) << " mang nghia tieng anh" <<  ENG << "co nghia tieng viet la gi: " << endl;
+    cin >> re_viet;
+    cout << "Thuoc loai tu gi: " << endl;
+    cout << "(1): Danh tu" << setw(5) << "(2): Dong tu" << endl
+         << "(3): Tinh tu" << setw(5) << "(4): Trang tu" << endl;
+    cin >> re_type;
+    if(VIET == re_viet && TYPE == re_type)
+    {
+        cout << "CHINH XAC";
+    }
+    else if (VIET == re_viet)
+    {
+        cout << "SAI ROI" << endl;
+        show_type(TYPE);
+    }
+    else if (TYPE == re_type)
+    {
+        cout << "SAI ROI" << endl;
+        show_viet(VIET);
+    }
+    else 
+    {
+        cout << "SAI ROI, HOC LAI NHE" << endl;
+    } 
+}
+
+void Word::show_viet(string VIET)
+{
+    cout << "Tu nay co nghia tieng viet la: " << VIET << endl;
+}
+
+void Word::show_type(int TYPE)
+{
+
     switch (TYPE)
     {
     case 1:
@@ -47,22 +106,19 @@ void Word::voca_Show()
         cout << "Tu nay la Trang tu." << endl;
         break;
     }
-    default:
-    {
-        cout << "Nhap lai loai tu." << endl;
+    default:{
+        cout << "";
+            }
     }
-    }
-    cin >> TYPE;
 }
-system("pause");
+
 
 void Main_Menu()
 {
     char slct; // SELECT
     Word *obj1[100];
 
-Menu:
-{
+    Menu:{
     system("CLS");
     cout << "\t\t\t                         *" << endl;
     cout << "\t\t\t                    ***********" << endl;
@@ -81,12 +137,11 @@ Menu:
     cout << "\t\t\t  -----------------------------------------------" << endl;
     cout << endl;
     cout << "\t\t\t 1.  CREATE VOCABULARY" << endl;
-    cout << "\t\t\t 2.  CHECKING VOCABULARY" << endl;
-    cout << "\t\t\t 3.  REVIEW VOCABULARY" << endl;
-    cout << "\t\t\t 4.  SPELL CHECKING" << endl;
-    cout << "\t\t\t 5.  LIST LEARNED VOCABULARY " << endl;
+    cout << "\t\t\t 2.  REVIEW VOCABULARY" << endl;
+    cout << "\t\t\t 3.  CHECKING LEARNED VOCABULARY" << endl;
+    cout << "\t\t\t 4.  LET'S RELAXING" << endl;
     cout << endl;
-    cout << "\t\t\t SELECT OPTION (1-5): ";
+    cout << "\t\t\t SELECT OPTION (1-4): ";
     cin >> slct;
 
     switch (slct)
@@ -104,42 +159,21 @@ Menu:
         cout << endl;
         for (int i = 0; i < n; i++)
         {
-            string type;
             cout << endl;
             system("CLS");
             cout << "\t\t\t\t  ------------------------------------------------------" << endl;
             cout << "\t\t\t\t\t\t      CREATE VOCABULARY" << endl;
             cout << "\t\t\t\t  ------------------------------------------------------" << endl
                  << endl;
-            do
-            {
-                cout << endl;
-                cout << "\t\t\t\t  Enter Vocabulary Meaning (VIET/ENG):  ";
-                cin >> type;
-                cout << endl;
-                if (type == "ENG")
-                {
-                    obj1[i] = new Checking_voca;
-                    obj1[i]->create_vocabulary(type);
-                }
-                else if (type == "VIET")
-                {
-                    obj1[i] = new Saving_voca;
-                    obj1[i]->create_vocabulary(type);
-                }
-                else
-                {
-                    cout << endl;
-                    cout << "\t\t\t\t  Invalid Vocabulary Meaning Type, Please try again......" << endl;
-                }
-            } while (type != "ENG" && type != "VIET");
+            cout << endl;
+            obj1[i]->create_vocabulary();
         }
         goto Menu;
         break;
 
     case '2':
         system("CLS");
-        if (Word::get_voca() == 0)
+        if (Word::getT_voca() == 0)
         {
             cout << endl
                  << endl
@@ -147,72 +181,24 @@ Menu:
             cout << "\t\t\t\t   -------No Vocabulary Created Yet-------" << endl
                  << endl
                  << endl;
+        goto Menu;
+        break;
         }
         else
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < n; i++)
             {
-                int ID, type_word;
                 cout << endl;
                 cout << "\t\t\t\t------------------------------------------------------" << endl;
-                cout << "\t\t\t\t\t\t     TYPE WORD" << endl;
-                cout << "\t\t\t\t------------------------------------------------------" << endl
-                     << endl
-                     << endl;
-                cout << "\t\t\t\t Enter ID OF VOCABULARY:  ";
-                cin >> ID;
-                cout << endl;
-                cout << "\t\t\t\t Enter Type Of Vocabulary:  ";
-                cin >> type_word;
-                cout << endl;
-                for (int i = 0; i < n; i++)
-                {
-                    obj1[i]->Typing(type_word, ID);
-                }
-            }
-            cout << endl
-                 << "\t\t\t\t  Define Successfully......" << endl;
-        }
-        cout << endl;
+                cout << "\t\t\t\t\t\t     REVIEW VOCABULARY" << endl;
+                cout << "\t\t\t\t------------------------------------------------------" << endl;
+                obj1[i]->review_vocabulary(obj1[i]->get_viet(), obj1[i]->get_type());
         system("pause");
         goto Menu;
         break;
-
-    case '3':
-        system("CLS");
-        if (Word::get_voca() == 0)
-        {
-            cout << endl
-                 << endl
-                 << endl;
-            cout << "\t\t\t\t   -------No Vocabulary Created Yet-------" << endl
-                 << endl
-                 << endl;
-        }
-        else
-        {
-            for (int k = 0; k < 1; k++)
-            {
-                int j, amnt;
-                cout << endl;
-                cout << "\t\t\t\t------------------------------------------------------" << endl;
-                cout << "\t\t\t\t\t\t     WITHDRAW AMOUNT" << endl;
-                cout << "\t\t\t\t------------------------------------------------------" << endl
-                     << endl
-                     << endl;
-                cout << "\t\t\t\t Enter Account Number to Withdraw Amount:  ";
-                cin >> j;
-                cout << endl;
-                cout << "\t\t\t\t Enter Amount To Be Withdrawed:  ";
-                cin >> amnt;
-                cout << endl;
-                for (int i = 0; i < n; i++)
-                {
-                    obj1[i]->withdraws(amnt, j);
-                }
             }
         }
-        cout << endl;
-        system("pause");
-        goto Menu;
-        break;
+    }
+    }
+}
+    
